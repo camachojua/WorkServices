@@ -10,15 +10,16 @@ class UploadWorker(context: Context, workerParameters: WorkerParameters):
     Worker(context, workerParameters) {
     override fun doWork(): Result {
         try {
-            val miVar = inputData.getInt("key1")
+            val miVar = inputData.getInt(MainActivity.KEY_VALUE, 0)
 
-            for (i: Int in 0..10) {
+            for (i: Int in 0..600) {
                 Log.i("WorkerManagerTag","Subiendo la bilirrubina $i")
             }
+            return Result.success()
         } catch (ex: Exception) {
-            return Result.failure()
+            Log.e("WorkerManagerTag", ex.toString())
+            return Result.retry()
         }
-        return Result.success()
     }
 }
 

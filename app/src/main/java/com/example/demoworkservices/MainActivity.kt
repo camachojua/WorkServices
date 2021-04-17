@@ -9,9 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.lifecycle.Observer
 import androidx.work.Data
-import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.google.android.material.textfield.TextInputLayout
@@ -22,6 +20,9 @@ class MainActivity : AppCompatActivity() {
     private var tiempo : Int = 0;
     private var fecha: String = "";
     private var mensaje: String = "";
+    companion object {
+        const val KEY_VALUE = ""
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,17 +71,18 @@ class MainActivity : AppCompatActivity() {
     private fun setOneTimeRequest() {
         val wm: WorkManager = WorkManager.getInstance(applicationContext)
         // val constraints = Constraints.Builder().setRequiresCharging(true).build()
-        val misDatos: Data = Data.Builder().putInt("key1", 45).build()
+        val misDatos: Data = Data.Builder().putInt(KEY_VALUE, 45).build()
 
         val uploadRequest=  PeriodicWorkRequest
-            .Builder(UploadWorker::class.java, tiempo.toLong(), TimeUnit.SECONDS)
+            .Builder(UploadWorker::class.java, tiempo.toLong(), TimeUnit.MINUTES)
             .build()
 
-        wm.enqueueUniquePeriodicWork("Chambrita",ExistingPeriodicWorkPolicy.REPLACE, uploadRequest)
-        wm.getWorkInfoById(uploadRequest.id)
-        wm.getWorkInfoByIdLiveData(uploadRequest.id).observe(this, Observer {
-            findViewById<TextView>(R.id.textview).text = it.state.name
-        })
+        wm.enqueue(uploadRequest)
+        //wm.enqueueUniquePeriodicWork("Chambrita",ExistingPeriodicWorkPolicy.REPLACE, uploadRequest)
+        //wm.getWorkInfoById(uploadRequest.id)
+        //wm.getWorkInfoByIdLiveData(uploadRequest.id).observe(this, Observer {
+        //    findViewById<TextView>(R.id.textview).text = it.state.name
+        //})
     }
 
     private fun createNotificationChannel() {
