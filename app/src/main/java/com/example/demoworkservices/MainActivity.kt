@@ -1,18 +1,18 @@
 package com.example.demoworkservices
 
-import android.app.*
+import android.app.DatePickerDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.TimePickerDialog
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.work.Data
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textfield.TextInputEditText
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -22,21 +22,15 @@ class MainActivity : AppCompatActivity() {
     private var mensaje: String = "";
     companion object {
         const val KEY_VALUE = ""
-        fun getInstance(): MainActivity? {
-            return this.getInstance()
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        createNotificationChannel()
         findViewById<Button>(R.id.button).setOnClickListener {
-            mensaje = (findViewById<TextInputLayout>(R.id.entradaUsuario)
-                .editText?.text ?: "No hay mensaje :(") as String
+            mensaje = findViewById<TextInputEditText>(R.id.entradaUsuario).toString()
             setOneTimeRequest()
-            createNotificationChannel()
-            // lanzaNotificacion("Hola",mensaje)
         }
 
         findViewById<TextView>(R.id.textoHora).setOnClickListener {
@@ -100,27 +94,5 @@ class MainActivity : AppCompatActivity() {
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         notificationManager.createNotificationChannel(canal)
-    }
-
-    public fun lanzaNotificacion(titulo: String, cuerpo: String){
-        val intent = Intent(this, NotificationsListener::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent: PendingIntent = PendingIntent
-            .getActivity(this, 0, intent, 0)
-
-
-        val constructor = NotificationCompat.Builder(this, "CHAFA")
-            .setSmallIcon(R.drawable.small_icon_foreground)
-            .setContentTitle(titulo)
-            .setContentText(cuerpo)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-
-        with(NotificationManagerCompat.from(this)) {
-            notify(1, constructor.build())
-        }
-
     }
 }
