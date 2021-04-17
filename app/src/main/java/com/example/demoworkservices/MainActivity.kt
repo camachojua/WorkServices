@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
                 .editText?.text ?: "No hay mensaje :(") as String
             setOneTimeRequest()
             createNotificationChannel()
-            lanzaNotificacion("Hola",mensaje)
+            // lanzaNotificacion("Hola",mensaje)
         }
 
         findViewById<TextView>(R.id.textoHora).setOnClickListener {
@@ -71,18 +71,18 @@ class MainActivity : AppCompatActivity() {
     private fun setOneTimeRequest() {
         val wm: WorkManager = WorkManager.getInstance(applicationContext)
         // val constraints = Constraints.Builder().setRequiresCharging(true).build()
-        val misDatos: Data = Data.Builder().putInt(KEY_VALUE, 45).build()
+        val misDatos: Data = Data.Builder().putString(KEY_VALUE, mensaje).build()
 
         val uploadRequest=  PeriodicWorkRequest
-            .Builder(UploadWorker::class.java, tiempo.toLong(), TimeUnit.MINUTES)
+            .Builder(UploadWorker::class.java, tiempo.toLong(), TimeUnit.SECONDS)
             .build()
 
         wm.enqueue(uploadRequest)
         //wm.enqueueUniquePeriodicWork("Chambrita",ExistingPeriodicWorkPolicy.REPLACE, uploadRequest)
-        //wm.getWorkInfoById(uploadRequest.id)
-        //wm.getWorkInfoByIdLiveData(uploadRequest.id).observe(this, Observer {
-        //    findViewById<TextView>(R.id.textview).text = it.state.name
-        //})
+        wm.getWorkInfoById(uploadRequest.id)
+        wm.getWorkInfoByIdLiveData(uploadRequest.id).observe(this, androidx.lifecycle.Observer {
+            findViewById<TextView>(R.id.textview).text = "${it.state.name} \n ${it.id}"
+        })
     }
 
     private fun createNotificationChannel() {
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         notificationManager.createNotificationChannel(canal)
     }
 
-    private fun lanzaNotificacion(titulo: String, cuerpo: String){
+    public fun lanzaNotificacion(titulo: String, cuerpo: String){
         val intent = Intent(this, NotificationsListener::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }

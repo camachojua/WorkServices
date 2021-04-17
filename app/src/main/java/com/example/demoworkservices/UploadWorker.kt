@@ -8,13 +8,15 @@ import androidx.work.WorkerParameters
 
 class UploadWorker(context: Context, workerParameters: WorkerParameters):
     Worker(context, workerParameters) {
+
+    //private val actividad = MainActivity()
+
     override fun doWork(): Result {
         try {
-            val miVar = inputData.getInt(MainActivity.KEY_VALUE, 0)
+            val miVar = inputData.getString(MainActivity.KEY_VALUE)
+            //actividad.lanzaNotificacion("Worker ${this.id}", miVar?: "No hay mensaje :(")
+            Log.i("WorkerTag", "Trabaja el ${this.id}")
 
-            for (i: Int in 0..600) {
-                Log.i("WorkerManagerTag","Subiendo la bilirrubina $i")
-            }
             return Result.success()
         } catch (ex: Exception) {
             Log.e("WorkerManagerTag", ex.toString())
