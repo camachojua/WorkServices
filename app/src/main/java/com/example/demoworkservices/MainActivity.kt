@@ -28,8 +28,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         createNotificationChannel()
+
         findViewById<Button>(R.id.button).setOnClickListener {
-            mensaje = findViewById<TextInputEditText>(R.id.entradaUsuario).toString()
+            mensaje = findViewById<TextInputEditText>(R.id.entradaUsuario).text.toString()
             setOneTimeRequest()
         }
 
@@ -67,15 +68,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun setOneTimeRequest() {
         val wm: WorkManager = WorkManager.getInstance(applicationContext)
-        // val constraints = Constraints.Builder().setRequiresCharging(true).build()
-        val misDatos: Data = Data.Builder().putString(KEY_VALUE, mensaje).build()
+        val miData = Data.Builder().putString(KEY_VALUE, mensaje).build()
 
         val uploadRequest=  PeriodicWorkRequest
-            .Builder(UploadWorker::class.java, tiempo.toLong(), TimeUnit.SECONDS)
-            .build()
+                .Builder(UploadWorker::class.java, tiempo.toLong(), TimeUnit.SECONDS)
+                .setInputData(miData)
+                .build()
+
 
         wm.enqueue(uploadRequest)
-        //wm.enqueueUniquePeriodicWork("Chambrita",ExistingPeriodicWorkPolicy.REPLACE, uploadRequest)
         wm.getWorkInfoById(uploadRequest.id)
         wm.getWorkInfoByIdLiveData(uploadRequest.id).observe(this, androidx.lifecycle.Observer {
             findViewById<TextView>(R.id.textview).text = "${it.state.name} \n ${it.id}"

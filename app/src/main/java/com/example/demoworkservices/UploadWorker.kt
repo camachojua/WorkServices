@@ -11,12 +11,12 @@ import androidx.work.WorkerParameters
 class UploadWorker(context: Context, workerParameters: WorkerParameters):
     Worker(context, workerParameters) {
 
-    //private val actividad = MainActivity()
+    private var miVar = inputData.getString(MainActivity.KEY_VALUE) ?: "No hay mensaje :("
 
     override fun doWork(): Result {
         try {
-            val miVar:String = inputData.getString(MainActivity.KEY_VALUE) ?: "No hay mensaje :("
             Log.i("WorkerTag", "Trabaja el ${this.id}")
+            Log.i("WorkerTag", miVar)
 
             var builder = NotificationCompat.Builder(applicationContext, "CHAFA")
                     .setSmallIcon(R.drawable.small_icon_foreground)
