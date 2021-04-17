@@ -12,7 +12,7 @@ class UploadWorker(context: Context, workerParameters: WorkerParameters):
         try {
             val miVar = inputData.getInt("key1")
 
-            for (i: Int in 0..600) {
+            for (i: Int in 0..10) {
                 Log.i("WorkerManagerTag","Subiendo la bilirrubina $i")
             }
         } catch (ex: Exception) {

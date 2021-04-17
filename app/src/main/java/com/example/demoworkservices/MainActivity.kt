@@ -10,21 +10,29 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Observer
-import androidx.work.Constraints
 import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
+import com.google.android.material.textfield.TextInputLayout
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
+    private var tiempo : Int = 0;
+    private var fecha: String = "";
+    private var mensaje: String = "";
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         findViewById<Button>(R.id.button).setOnClickListener {
+            mensaje = (findViewById<TextInputLayout>(R.id.entradaUsuario)
+                .editText?.text ?: "No hay mensaje :(") as String
             setOneTimeRequest()
             createNotificationChannel()
-            lanzaNotificacion("Hola","Mundo")
+            lanzaNotificacion("Hola",mensaje)
         }
 
         findViewById<TextView>(R.id.textoHora).setOnClickListener {
@@ -35,6 +43,7 @@ class MainActivity : AppCompatActivity() {
             val tpd = TimePickerDialog(this,TimePickerDialog.OnTimeSetListener(function = { view, h, m ->
 
                 findViewById<TextView>(R.id.textoHora).text = h.toString() + ":" + m.toString()
+                tiempo = m
             }),hour,minute,false) //
 
             tpd.show()
@@ -50,6 +59,7 @@ class MainActivity : AppCompatActivity() {
 
                 //Toast.makeText(this, h.toString() + " : " + m +" : " , Toast.LENGTH_LONG).show()
                 findViewById<TextView>(R.id.textoCalendario).text = y.toString() + "/" + m.toString() + "/" + d.toString()
+                fecha = y.toString() + "/" + m.toString() + "/" + d.toString()
             }),year,month,day)
 
             tpd.show()
@@ -59,15 +69,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setOneTimeRequest() {
         val wm: WorkManager = WorkManager.getInstance(applicationContext)
-        val constraints = Constraints.Builder().setRequiresCharging(true).build()
+        // val constraints = Constraints.Builder().setRequiresCharging(true).build()
         val misDatos: Data = Data.Builder().putInt("key1", 45).build()
 
-        val uploadRequest = OneTimeWorkRequest.Builder(UploadWorker::class.java)
-                .setConstraints(constraints)
-                .setInputData(misDatos)
-                .build()
+        val uploadRequest=  PeriodicWorkRequest
+            .Builder(UploadWorker::class.java, tiempo.toLong(), TimeUnit.SECONDS)
+            .build()
 
-        wm.enqueue(uploadRequest)
+        wm.enqueueUniquePeriodicWork("Chambrita",ExistingPeriodicWorkPolicy.REPLACE, uploadRequest)
         wm.getWorkInfoById(uploadRequest.id)
         wm.getWorkInfoByIdLiveData(uploadRequest.id).observe(this, Observer {
             findViewById<TextView>(R.id.textview).text = it.state.name
