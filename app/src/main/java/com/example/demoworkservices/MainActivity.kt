@@ -22,6 +22,9 @@ class MainActivity : AppCompatActivity() {
     private var mensaje: String = "";
     companion object {
         const val KEY_VALUE = ""
+        fun getInstance(): MainActivity? {
+            return this.getInstance()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
