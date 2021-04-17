@@ -33,7 +33,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/entradaUsuario"
         android:layout_width="320dp"
-        android:layout_height="240sp"
+        android:layout_height="180sp"
         android:layout_marginTop="32dp"
         android:background="#E8E5E5"
         android:layout_marginEnd="32dp"
