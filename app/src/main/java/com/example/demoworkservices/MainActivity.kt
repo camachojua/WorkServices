@@ -1,8 +1,6 @@
 package com.example.demoworkservices
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -16,6 +14,7 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +27,33 @@ class MainActivity : AppCompatActivity() {
             lanzaNotificacion("Hola","Mundo")
         }
 
+        findViewById<TextView>(R.id.textoHora).setOnClickListener {
+            val c = Calendar.getInstance()
+            val hour = c.get(Calendar.HOUR)
+            val minute = c.get(Calendar.MINUTE)
+
+            val tpd = TimePickerDialog(this,TimePickerDialog.OnTimeSetListener(function = { view, h, m ->
+
+                findViewById<TextView>(R.id.textoHora).text = h.toString() + ":" + m.toString()
+            }),hour,minute,false) //
+
+            tpd.show()
+        }
+
+        findViewById<TextView>(R.id.textoCalendario).setOnClickListener {
+            val c = Calendar.getInstance()
+            val year = c.get(Calendar.YEAR)
+            val month = c.get(Calendar.MONTH)
+            val day = c.get(Calendar.DAY_OF_MONTH)
+
+            val tpd = DatePickerDialog(this,DatePickerDialog.OnDateSetListener(function = { view, y, m,d ->
+
+                //Toast.makeText(this, h.toString() + " : " + m +" : " , Toast.LENGTH_LONG).show()
+                findViewById<TextView>(R.id.textoCalendario).text = y.toString() + "/" + m.toString() + "/" + d.toString()
+            }),year,month,day)
+
+            tpd.show()
+        }
 
     }
 
@@ -71,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
 
         val constructor = NotificationCompat.Builder(this, "CHAFA")
-            .setSmallIcon(R.drawable.small_icon_foregroundt)
+            .setSmallIcon(R.drawable.small_icon_foreground)
             .setContentTitle(titulo)
             .setContentText(cuerpo)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
